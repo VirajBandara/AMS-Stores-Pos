@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.M.S Stores Web Pos</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 0; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Header Fix */
+        .main-header { 
+            background: #1a73e8; color: white; width: 100%; text-align: center; 
+            padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;
+        }
+        .main-header h1 { margin: 0; font-size: 22px; }
+
+        /* Admin Button Position Fix */
+        .admin-toggle {
+            background: rgba(255,255,255,0.2); 
+            color: white; border: 1px solid white; padding: 8px 15px; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
+            transition: 0.3s;
+        }
+        .admin-toggle:hover { background: white; color: #1a73e8; }
+
+        .admin-panel { 
+            background: white; padding: 25px; 
+            width: 90%; max-width: 400px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px; text-align: center; border: 1px solid #eee;
+            display: none; 
+        }
+        .admin-panel.open { display: block; }
+        
+        .admin-panel input { padding: 12px; margin: 8px 0; width: 90%; border: 1px solid #ddd; border-radius: 10px; outline: none; }
+        .btn-save { background: #1a73e8; color: white; border: none; padding: 12px; width: 95%; cursor: pointer; font-weight: bold; border-radius: 10px; margin-top: 10px; }
+
+        .search-container { width: 100%; max-width: 1100px; margin-bottom: 20px; padding: 0 15px; box-sizing: border-box; }
+        #search-input { width: 100%; padding: 15px; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; outline: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+        .container { display: flex; width: 100%; max-width: 1100px; gap: 20px; padding: 0 15px; box-sizing: border-box; flex-direction: column; }
+        
+        @media (min-width: 768px) {
+            .container { flex-direction: row; }
+            .main-header { flex-direction: row; justify-content: space-around; padding: 15px 0; }
+        }
+
+        #shop-items { flex: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+        .product-card { 
+            background: white; padding: 15px; border-radius: 15px; 
+            text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+            border: 1px solid #efefef; display: flex; flex-direction: column; 
+            justify-content: space-between; height: 160px; position: relative;
+        }
+        .product-card h4 { margin: 5px 0; font-size: 17px; color: #333; }
+        .delete-p-btn { position: absolute; top: 5px; right: 8px; color: #ccc; cursor: pointer; font-size: 20px; border:none; background:none; }
+        .delete-p-btn:hover { color: #e74c3c; }
+
+        .buy-btn { background: #3498db; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
+
+        .cart-section { flex: 1; background: #2c3e50; color: white; padding: 20px; border-radius: 18px; min-height: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .cart-item { font-size:14px; margin-bottom:12px; display: flex; justify-content: space-between; border-bottom: 1px solid #3e4f5f; padding-bottom: 8px; }
+        .remove-btn { color: #ff7675; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 18px; }
+
+        .stats-container { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; }
+        .stat-card {
+            flex: 1; background: white; padding: 15px; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #1a73e8;
+        }
+        .stat-card h4 { margin: 0; color: #555; font-size: 11px; text-transform: uppercase; }
+        .stat-card p { margin: 8px 0 0; font-size: 18px; font-weight: bold; color: #1a73e8; }
+        .stat-profit { border-bottom-color: #2ecc71; }
+        .stat-profit p { color: #2ecc71; }
+             
+        .history-section { width: 100%; max-width: 1100px; margin-top: 30px; border-top: 1px solid #ddd; padding: 20px 15px; box-sizing: border-box; }
+        .history-card { 
+            background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px; 
+            border-left: 6px solid #2ecc71; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex; justify-content: space-between; align-items: center; font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-header">
+        <h1>A.M.S Stores Web Pos</h1>
+        <button class="admin-toggle" onclick="toggleAdmin()">Admin Panel ⚙️</button>
+    </div>
+
+    <div class="admin-panel" id="adminPanel">
+        <h3 style="margin-top: 0;">නව භාණ්ඩයක් ඇතුළත් කිරීම</h3>
+        <input type="text" id="p_name" placeholder="නම (සීනි)">
+        <input type="text" id="p_unit" placeholder="ඒකකය (1kg)">
+        <input type="number" id="p_cost" placeholder="මිලදී ගත් මිල (Cost)">
+        <input type="number" id="p_price" placeholder="විකුණන මිල (Price)">
+        <button class="btn-save" onclick="saveProduct()">Shop එකට දාන්න</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="භාණ්ඩ නමෙන් සොයන්න..." onkeyup="renderProducts(this.value)">
+    </div>
+
+    <div class="container">
+        <div id="shop-items"></div>
+        
+        <div class="cart-section">
+            <h3 style="margin-top:0">Cart 🛒</h3>
+            <div id="cart-list"></div>
+            <hr style="border:0; border-top:1px solid #444; margin:20px 0">
+            <h4 style="display:flex; justify-content: space-between;">මුළු එකතුව: <span>රු. <span id="total-val">0</span></span></h4>
+            <button onclick="finishOrder()" style="width:100%; padding:15px; background:#2ecc71; color:white; border:none; cursor:pointer; font-weight:bold; border-radius:12px; font-size: 16px;">Order එක සාර්ථකයි</button>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <div class="stats-container">
+            <div class="stat-card">
+                <h4>මුළු විකුණුම්</h4>
+                <p>රු. <span id="stat-total-sales">0</span></p>
+            </div>
+            <div class="stat-card stat-profit">
+                <h4>මුළු ලාභය</h4>
+                <p>රු. <span id="stat-total-profit">0</span></p>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+            <h3 style="margin:0">විකුණුම් ඉතිහාසය</h3>
+            <button onclick="downloadExcel()" style="padding:12px; background:#27ae60; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold; width: 100%;">📊 Excel වාර්තාව ලබාගන්න</button>
+        </div>
+        <div id="history-list"></div>
+    </div>
+
+    <script>
+        const P_KEY = 'ams_stores_v10';
+        const O_KEY = 'ams_orders_v10';
+
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('open');
+        }
+
+        function getProducts() { return JSON.parse(localStorage.getItem(P_KEY)) || []; }
+        function getOrders() { return JSON.parse(localStorage.getItem(O_KEY)) || []; }
+
+        function saveProduct() {
+            const name = document.getElementById('p_name').value;
+            const unit = document.getElementById('p_unit').value;
+            const cost = document.getElementById('p_cost').value;
+            const price = document.getElementById('p_price').value;
+            if (name && unit && cost && price) {
+                let products = getProducts();
+                products.push({ id: Date.now(), name, unit, cost: parseFloat(cost), price: parseFloat(price) });
+                localStorage.setItem(P_KEY, JSON.stringify(products));
+                document.querySelectorAll('.admin-panel input').forEach(i => i.value = '');
+                renderProducts();
+                toggleAdmin();
+            } else {
+                alert("සියලුම තොරතුරු ඇතුළත් කරන්න.");
+            }
+        }
+
+        function renderProducts(filter = "") {
+            const container = document.getElementById('shop-items');
+            container.innerHTML = "";
+            getProducts().forEach(p => {
+                if (p.name.toLowerCase().includes(filter.toLowerCase())) {
+                    container.innerHTML += `
+                        <div class="product-card">
+                            <button class="delete-p-btn" onclick="deleteProduct(${p.id})">×</button>
+                            <div><h4>${p.name}</h4><p>${p.unit} = රු. ${p.price}</p></div>
+                            <button class="buy-btn" onclick="addToCart(${p.id})">Add to Cart</button>
+                        </div>`;
+                }
+            });
+        }
+
+        function deleteProduct(id) {
+            if(confirm("මකන්නද?")) {
+                let products = getProducts().filter(p => p.id !== id);
+                localStorage.setItem(P_KEY, JSON.stringify(products));
+                renderProducts();
+            }
+        }
+
+        let cart = [];
+        function addToCart(id) {
+            let p = getProducts().find(x => x.id === id);
+            let qty = prompt(p.name + " ප්‍රමාණය?", "1");
+            if (qty && !isNaN(qty)) {
+                let q = parseFloat(qty);
+                cart.push({ 
+                    cartId: Date.now(), 
+                    name: p.name, 
+                    qtyText: q + " " + p.unit.replace(/[0-9.]/g, '').trim(), 
+                    totalPrice: q * p.price,
+                    profit: (p.price - p.cost) * q
+                });
+                renderCart();
+            }
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cart-list');
+            let sum = 0; list.innerHTML = "";
+            cart.forEach(c => {
+                list.innerHTML += `<div class="cart-item">
+                    <span>${c.name} (${c.qtyText})</span>
+                    <span>රු. ${c.totalPrice} <button class="remove-btn" onclick="removeFromCart(${c.cartId})">×</button></span>
+                </div>`;
+                sum += c.totalPrice;
+            });
+            document.getElementById('total-val').innerText = sum;
+        }
+
+        function removeFromCart(id) { cart = cart.filter(i => i.cartId !== id); renderCart(); }
+
+        function finishOrder() {
+            if (cart.length === 0) return;
+            let orders = getOrders();
+            orders.push({ 
+                orderId: Date.now(), 
+                billNo: orders.length + 1, 
+                items: [...cart], 
+                grandTotal: cart.reduce((a, b) => a + b.totalPrice, 0), 
+                totalProfit: cart.reduce((a, b) => a + b.profit, 0),
+                time: new Date().toLocaleString('si-LK') 
+            });
+            localStorage.setItem(O_KEY, JSON.stringify(orders));
+            cart = []; renderCart(); renderHistory(); updateStats();
+            alert("සාර්ථකයි!");
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = "";
+            getOrders().reverse().forEach(o => {
+                list.innerHTML += `<div class="history-card">
+                    <div><b>බිල් #${o.billNo}</b> - රු. ${o.grandTotal} <br><small>${o.time}</small></div>
+                    <button style="color:#e74c3c; cursor:pointer; border:none; background:none; font-weight:bold;" onclick="deleteHistory(${o.orderId})">✖</button>
+                </div>`;
+            });
+        }
+
+        function deleteHistory(id) {
+            if(confirm("බිල්පත මකන්නද?")) {
+                let orders = getOrders().filter(o => o.orderId !== id);
+                localStorage.setItem(O_KEY, JSON.stringify(orders));
+                renderHistory(); updateStats();
+            }
+        }
+
+        function updateStats() {
+            let orders = getOrders();
+            let totalSales = 0;
+            let totalProfit = 0;
+            orders.forEach(o => {
+                totalSales += o.grandTotal;
+                totalProfit += o.totalProfit;
+            });
+            document.getElementById('stat-total-sales').innerText = totalSales.toLocaleString();
+            document.getElementById('stat-total-profit').innerText = totalProfit.toLocaleString();
+        }
+
+        function downloadExcel() {
+            let orders = getOrders();
+            let excelData = '\ufeff' + `<table border="1">
+                <tr style="background:#eee;"><td>Bill No</td><td>Item</td><td>Qty</td><td>Price</td><td>Profit</td><td>Total Bill</td><td>Date</td></tr>`;
+            orders.forEach(o => {
+                o.items.forEach((it, idx) => {
+                    excelData += `<tr><td>${idx === 0 ? o.billNo : ""}</td><td>${it.name}</td><td>${it.qtyText}</td><td>${it.totalPrice}</td><td>${it.profit}</td><td>${idx === 0 ? o.grandTotal : ""}</td><td>${idx === 0 ? o.time : ""}</td></tr>`;
+                });
+            });
+            excelData += `</table>`;
+            const blob = new Blob([excelData], { type: 'application/vnd.ms-excel' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Sales_Report.xls';
+            link.click();
+        }
+
+        window.onload = function() { renderProducts(); renderHistory(); updateStats(); };
+    </script>
+</body>
+</html>
