@@ -6,280 +6,257 @@
     <title>A.M.S Stores Web Pos</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 0; margin: 0; display: flex; flex-direction: column; align-items: center; }
-        
-        /* Header Fix */
-        .main-header { 
-            background: #1a73e8; color: white; width: 100%; text-align: center; 
-            padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;
-        }
-        .main-header h1 { margin: 0; font-size: 22px; }
-
-        /* Admin Button Position Fix */
-        .admin-toggle {
-            background: rgba(255,255,255,0.2); 
-            color: white; border: 1px solid white; padding: 8px 15px; 
-            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
-            transition: 0.3s;
-        }
-        .admin-toggle:hover { background: white; color: #1a73e8; }
-
-        .admin-panel { 
-            background: white; padding: 25px; 
-            width: 90%; max-width: 400px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            margin-bottom: 20px; text-align: center; border: 1px solid #eee;
-            display: none; 
-        }
+        .main-header { background: #1a73e8; color: white; width: 100%; text-align: center; padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .admin-toggle { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .admin-panel { background: white; padding: 25px; width: 90%; max-width: 400px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center; display: none; }
         .admin-panel.open { display: block; }
-        
         .admin-panel input { padding: 12px; margin: 8px 0; width: 90%; border: 1px solid #ddd; border-radius: 10px; outline: none; }
-        .btn-save { background: #1a73e8; color: white; border: none; padding: 12px; width: 95%; cursor: pointer; font-weight: bold; border-radius: 10px; margin-top: 10px; }
-
+        .btn-save { background: #1a73e8; color: white; border: none; padding: 12px; width: 95%; cursor: pointer; font-weight: bold; border-radius: 10px; }
         .search-container { width: 100%; max-width: 1100px; margin-bottom: 20px; padding: 0 15px; box-sizing: border-box; }
-        #search-input { width: 100%; padding: 15px; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; outline: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-        .container { display: flex; width: 100%; max-width: 1100px; gap: 20px; padding: 0 15px; box-sizing: border-box; flex-direction: column; }
+        #search-input { width: 100%; padding: 15px; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; outline: none; box-sizing: border-box; }
         
-        @media (min-width: 768px) {
-            .container { flex-direction: row; }
-            .main-header { flex-direction: row; justify-content: space-around; padding: 15px 0; }
-        }
-
-        #shop-items { flex: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-        .product-card { 
-            background: white; padding: 15px; border-radius: 15px; 
-            text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-            border: 1px solid #efefef; display: flex; flex-direction: column; 
-            justify-content: space-between; height: 160px; position: relative;
-        }
-        .product-card h4 { margin: 5px 0; font-size: 17px; color: #333; }
-        .delete-p-btn { position: absolute; top: 5px; right: 8px; color: #ccc; cursor: pointer; font-size: 20px; border:none; background:none; }
-        .delete-p-btn:hover { color: #e74c3c; }
-
-        .buy-btn { background: #3498db; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
-
-        .cart-section { flex: 1; background: #2c3e50; color: white; padding: 20px; border-radius: 18px; min-height: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .cart-item { font-size:14px; margin-bottom:12px; display: flex; justify-content: space-between; border-bottom: 1px solid #3e4f5f; padding-bottom: 8px; }
-        .remove-btn { color: #ff7675; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 18px; }
-
-        .stats-container { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; }
-        .stat-card {
-            flex: 1; background: white; padding: 15px; border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #1a73e8;
-        }
-        .stat-card h4 { margin: 0; color: #555; font-size: 11px; text-transform: uppercase; }
-        .stat-card p { margin: 8px 0 0; font-size: 18px; font-weight: bold; color: #1a73e8; }
-        .stat-profit { border-bottom-color: #2ecc71; }
-        .stat-profit p { color: #2ecc71; }
-             
-        .history-section { width: 100%; max-width: 1100px; margin-top: 30px; border-top: 1px solid #ddd; padding: 20px 15px; box-sizing: border-box; }
-        .history-card { 
-            background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px; 
-            border-left: 6px solid #2ecc71; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            display: flex; justify-content: space-between; align-items: center; font-size: 14px;
-        }
+        .container { display: flex; width: 100%; max-width: 1100px; gap: 20px; padding: 0 15px; box-sizing: border-box; flex-direction: column; }
+        @media (min-width: 768px) { .container { flex-direction: row; align-items: flex-start; } .main-header { flex-direction: row; justify-content: space-around; } }
+        
+        #shop-items { flex: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .product-card { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #efefef; display: flex; flex-direction: column; justify-content: space-between; height: 160px; position: relative; }
+        .delete-p-btn { position: absolute; top: 5px; right: 8px; color: #ccc; cursor: pointer; border:none; background:none; font-size: 18px;}
+        .buy-btn { background: #3498db; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        
+        /* Cart Section - Dynamic Height Updated */
+        .cart-section { flex: 1; background: #2c3e50; color: white; padding: 20px; border-radius: 18px; display: flex; flex-direction: column; height: auto; transition: all 0.3s ease; }
+        .cart-title { margin: 0; padding-bottom: 10px; border-bottom: 1px solid #3e4f5f; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        #cart-list { max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        #cart-list:not(:empty) { margin: 15px 0; }
+        .cart-item { font-size:14px; margin-bottom:12px; display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #3e4f5f33; }
+        .cart-footer { padding-top: 15px; border-top: 1px solid #3e4f5f; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        .history-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 12px; border-left: 6px solid #2ecc71; display: flex; justify-content: space-between; align-items: center; }
+        .history-btns button { padding: 8px; margin-left: 5px; cursor: pointer; border-radius: 5px; border: 1px solid #ddd; }
+        #print-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:999; }
+        .modal-content { background:white; padding:20px; width:320px; border-radius:10px; text-align:center; }
     </style>
 </head>
 <body>
 
     <div class="main-header">
         <h1>A.M.S Stores Web Pos</h1>
-        <button class="admin-toggle" onclick="toggleAdmin()">Admin Panel ⚙️</button>
+        <button class="admin-toggle" onclick="authAdmin()">Admin Panel ⚙️</button>
     </div>
 
     <div class="admin-panel" id="adminPanel">
-        <h3 style="margin-top: 0;">නව භාණ්ඩයක් ඇතුළත් කිරීම</h3>
+        <h3>නව භාණ්ඩයක් ඇතුළත් කිරීම</h3>
         <input type="text" id="p_name" placeholder="නම (සීනි)">
-        <input type="text" id="p_unit" placeholder="ඒකකය (1kg)">
-        <input type="number" id="p_cost" placeholder="මිලදී ගත් මිල (Cost)">
-        <input type="number" id="p_price" placeholder="විකුණන මිල (Price)">
+        <input type="text" id="p_unit" placeholder="ඒකකය (kg, ltr, pcs)">
+        <input type="number" id="p_cost" placeholder="මිලදී ගත් මිල">
+        <input type="number" id="p_price" placeholder="විකුණන මිල">
         <button class="btn-save" onclick="saveProduct()">Shop එකට දාන්න</button>
+        <div style="margin-top:15px; display:flex; gap:5px; justify-content:center;">
+            <button onclick="exportData()" style="background:#673ab7; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">Backup 📥</button>
+            <button onclick="document.getElementById('importFile').click()" style="background:#ff9800; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">Restore 📤</button>
+            <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+        </div>
+        <button onclick="toggleAdmin()" style="margin-top:15px; background:none; border:none; color:gray; cursor:pointer;">Close</button>
     </div>
 
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="භාණ්ඩ නමෙන් සොයන්න..." onkeyup="renderProducts(this.value)">
-    </div>
+    <div class="search-container"><input type="text" id="search-input" placeholder="භාණ්ඩ නමෙන් සොයන්න..." onkeyup="renderProducts(this.value)"></div>
 
     <div class="container">
         <div id="shop-items"></div>
         
         <div class="cart-section">
-            <h3 style="margin-top:0">Cart 🛒</h3>
+            <h3 class="cart-title">Cart 🛒</h3>
             <div id="cart-list"></div>
-            <hr style="border:0; border-top:1px solid #444; margin:20px 0">
-            <h4 style="display:flex; justify-content: space-between;">මුළු එකතුව: <span>රු. <span id="total-val">0</span></span></h4>
-            <button onclick="finishOrder()" style="width:100%; padding:15px; background:#2ecc71; color:white; border:none; cursor:pointer; font-weight:bold; border-radius:12px; font-size: 16px;">Order එක සාර්ථකයි</button>
+            <div class="cart-footer">
+                <div class="total-row">
+                    <span>මුළු එකතුව:</span>
+                    <span style="font-size: 1.2rem; font-weight: bold;">රු. <span id="total-val">0.00</span></span>
+                </div>
+                <button onclick="finishOrder()" style="width:100%; padding:15px; background:#2ecc71; color:white; border:none; cursor:pointer; font-weight:bold; border-radius:12px; font-size: 1rem;">Order එක සාර්ථකයි</button>
+            </div>
         </div>
     </div>
 
-    <div class="history-section">
-        <div class="stats-container">
-            <div class="stat-card">
-                <h4>මුළු විකුණුම්</h4>
-                <p>රු. <span id="stat-total-sales">0</span></p>
+    <div class="history-section" style="width:90%; max-width:1100px; margin: 30px auto;">
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <div style="background:white; padding:15px; flex:1; border-radius:12px; text-align:center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <small style="color: #666;">මුළු විකුණුම්</small><br><b style="font-size: 1.1rem;">රු. <span id="stat-total-sales">0.00</span></b>
             </div>
-            <div class="stat-card stat-profit">
-                <h4>මුළු ලාභය</h4>
-                <p>රු. <span id="stat-total-profit">0</span></p>
+            <div style="background:white; padding:15px; flex:1; border-radius:12px; text-align:center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <small style="color: #666;">මුළු ලාභය</small><br><b style="color:green; font-size: 1.1rem;">රු. <span id="stat-total-profit">0.00</span></b>
             </div>
         </div>
-
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-            <h3 style="margin:0">විකුණුම් ඉතිහාසය</h3>
-            <button onclick="downloadExcel()" style="padding:12px; background:#27ae60; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold; width: 100%;">📊 Excel වාර්තාව ලබාගන්න</button>
-        </div>
+        <h3>විකුණුම් ඉතිහාසය</h3>
+        <button onclick="downloadExcel()" style="margin-bottom:10px; padding:12px; background:#27ae60; color:white; border:none; border-radius:8px; cursor:pointer; width:100%; font-weight: bold;">📊 Excel Report ලබාගන්න</button>
         <div id="history-list"></div>
     </div>
 
+    <div id="print-modal">
+        <div class="modal-content">
+            <div id="bill-area">
+                <h2 style="margin:0">A.M.S STORES</h2>
+                <p style="font-size:12px">Kandy, Sri Lanka</p>
+                <hr>
+                <div id="bill-content" style="text-align:left; font-size:14px;"></div>
+                <hr>
+                <p>ස්තූතියි! නැවත එන්න.</p>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+                <button onclick="document.getElementById('print-modal').style.display='none'" style="background:#e74c3c; color:white; border:none; padding:10px 20px; cursor:pointer; border-radius:5px;">Close</button>
+                <button id="realPrintBtn" style="background:#1a73e8; color:white; border:none; padding:10px 20px; cursor:pointer; border-radius:5px;">Print Bill 🖨️</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const P_KEY = 'ams_stores_v10';
-        const O_KEY = 'ams_orders_v10';
+        const P_KEY = 'ams_stores_v10', O_KEY = 'ams_orders_v10', ADMIN_PW = '1234';
+        let cart = [];
 
-        function toggleAdmin() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('open');
-        }
-
+        function authAdmin() { if (prompt("Password:") === ADMIN_PW) toggleAdmin(); else alert("වැරදියි!"); }
+        function toggleAdmin() { document.getElementById('adminPanel').classList.toggle('open'); }
         function getProducts() { return JSON.parse(localStorage.getItem(P_KEY)) || []; }
         function getOrders() { return JSON.parse(localStorage.getItem(O_KEY)) || []; }
 
         function saveProduct() {
-            const name = document.getElementById('p_name').value;
-            const unit = document.getElementById('p_unit').value;
-            const cost = document.getElementById('p_cost').value;
-            const price = document.getElementById('p_price').value;
+            const name = document.getElementById('p_name').value, unit = document.getElementById('p_unit').value;
+            const cost = document.getElementById('p_cost').value, price = document.getElementById('p_price').value;
             if (name && unit && cost && price) {
-                let products = getProducts();
-                products.push({ id: Date.now(), name, unit, cost: parseFloat(cost), price: parseFloat(price) });
-                localStorage.setItem(P_KEY, JSON.stringify(products));
-                document.querySelectorAll('.admin-panel input').forEach(i => i.value = '');
-                renderProducts();
-                toggleAdmin();
-            } else {
-                alert("සියලුම තොරතුරු ඇතුළත් කරන්න.");
+                let p = getProducts();
+                p.push({ id: Date.now(), name, unit, cost: parseFloat(cost), price: parseFloat(price) });
+                localStorage.setItem(P_KEY, JSON.stringify(p));
+                renderProducts(); toggleAdmin();
             }
         }
 
-        function renderProducts(filter = "") {
-            const container = document.getElementById('shop-items');
-            container.innerHTML = "";
+        function renderProducts(f = "") {
+            const c = document.getElementById('shop-items'); c.innerHTML = "";
             getProducts().forEach(p => {
-                if (p.name.toLowerCase().includes(filter.toLowerCase())) {
-                    container.innerHTML += `
-                        <div class="product-card">
-                            <button class="delete-p-btn" onclick="deleteProduct(${p.id})">×</button>
-                            <div><h4>${p.name}</h4><p>${p.unit} = රු. ${p.price}</p></div>
-                            <button class="buy-btn" onclick="addToCart(${p.id})">Add to Cart</button>
-                        </div>`;
+                if (p.name.toLowerCase().includes(f.toLowerCase())) {
+                    c.innerHTML += `<div class="product-card">
+                        <button class="delete-p-btn" onclick="deleteProduct(${p.id})">×</button>
+                        <div><h4>${p.name}</h4><p>රු. ${p.price.toFixed(2)} (${p.unit})</p></div>
+                        <button class="buy-btn" onclick="addToCart(${p.id})">Add to Cart</button>
+                    </div>`;
                 }
             });
         }
 
-        function deleteProduct(id) {
-            if(confirm("මකන්නද?")) {
-                let products = getProducts().filter(p => p.id !== id);
-                localStorage.setItem(P_KEY, JSON.stringify(products));
-                renderProducts();
-            }
-        }
+        function deleteProduct(id) { if(prompt("Password?") === ADMIN_PW) { localStorage.setItem(P_KEY, JSON.stringify(getProducts().filter(p => p.id !== id))); renderProducts(); } }
 
-        let cart = [];
         function addToCart(id) {
             let p = getProducts().find(x => x.id === id);
-            let qty = prompt(p.name + " ප්‍රමාණය?", "1");
-            if (qty && !isNaN(qty)) {
-                let q = parseFloat(qty);
-                cart.push({ 
-                    cartId: Date.now(), 
-                    name: p.name, 
-                    qtyText: q + " " + p.unit.replace(/[0-9.]/g, '').trim(), 
-                    totalPrice: q * p.price,
-                    profit: (p.price - p.cost) * q
-                });
+            let qtyStr = prompt(`${p.name} (${p.unit}) ප්‍රමාණය?`, "1");
+            if (qtyStr && !isNaN(qtyStr)) {
+                let q = parseFloat(qtyStr);
+                let existing = cart.find(item => item.id === id);
+                if (existing) {
+                    existing.qty += q;
+                    existing.totalPrice = existing.qty * p.price;
+                    existing.profit = (p.price - p.cost) * existing.qty;
+                } else {
+                    cart.push({ id: id, name: p.name, qty: q, unit: p.unit, totalPrice: q * p.price, profit: (p.price - p.cost) * q });
+                }
                 renderCart();
             }
         }
 
         function renderCart() {
-            const list = document.getElementById('cart-list');
-            let sum = 0; list.innerHTML = "";
-            cart.forEach(c => {
-                list.innerHTML += `<div class="cart-item">
-                    <span>${c.name} (${c.qtyText})</span>
-                    <span>රු. ${c.totalPrice} <button class="remove-btn" onclick="removeFromCart(${c.cartId})">×</button></span>
+            const l = document.getElementById('cart-list'); let s = 0; l.innerHTML = "";
+            cart.forEach((c, idx) => {
+                l.innerHTML += `<div class="cart-item">
+                    <span>${c.name} - ${c.qty} ${c.unit}</span>
+                    <span>රු. ${c.totalPrice.toFixed(2)} <button onclick="cart.splice(${idx},1); renderCart();" style="color:#ff4757; border:none; background:none; cursor:pointer; font-size:1.2rem; margin-left:10px;">×</button></span>
                 </div>`;
-                sum += c.totalPrice;
+                s += c.totalPrice;
             });
-            document.getElementById('total-val').innerText = sum;
+            document.getElementById('total-val').innerText = s.toFixed(2);
         }
-
-        function removeFromCart(id) { cart = cart.filter(i => i.cartId !== id); renderCart(); }
 
         function finishOrder() {
             if (cart.length === 0) return;
             let orders = getOrders();
-            orders.push({ 
-                orderId: Date.now(), 
-                billNo: orders.length + 1, 
-                items: [...cart], 
+            const newOrder = { 
+                orderId: Date.now(), billNo: orders.length + 1, items: [...cart], 
                 grandTotal: cart.reduce((a, b) => a + b.totalPrice, 0), 
                 totalProfit: cart.reduce((a, b) => a + b.profit, 0),
-                time: new Date().toLocaleString('si-LK') 
-            });
-            localStorage.setItem(O_KEY, JSON.stringify(orders));
+                date: new Date().toLocaleDateString('si-LK'), time: new Date().toLocaleTimeString('si-LK')
+            };
+            orders.push(newOrder); localStorage.setItem(O_KEY, JSON.stringify(orders));
             cart = []; renderCart(); renderHistory(); updateStats();
-            alert("සාර්ථකයි!");
+            showBillModal(newOrder.orderId);
         }
 
         function renderHistory() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = "";
+            const l = document.getElementById('history-list'); l.innerHTML = "";
             getOrders().reverse().forEach(o => {
-                list.innerHTML += `<div class="history-card">
-                    <div><b>බිල් #${o.billNo}</b> - රු. ${o.grandTotal} <br><small>${o.time}</small></div>
-                    <button style="color:#e74c3c; cursor:pointer; border:none; background:none; font-weight:bold;" onclick="deleteHistory(${o.orderId})">✖</button>
+                l.innerHTML += `<div class="history-card">
+                    <div><b>බිල් #${o.billNo}</b> | <small>${o.date} ${o.time}</small><br>රු. ${o.grandTotal.toFixed(2)}</div>
+                    <div class="history-btns">
+                        <button onclick="showBillModal(${o.orderId})" style="background:#1a73e8; color:white; border:none;">🖨️</button>
+                        <button onclick="deleteOrder(${o.orderId})" style="color:#ff4757; border: 1px solid #ff4757; background:none;">✖</button>
+                    </div>
                 </div>`;
             });
         }
 
-        function deleteHistory(id) {
-            if(confirm("බිල්පත මකන්නද?")) {
-                let orders = getOrders().filter(o => o.orderId !== id);
-                localStorage.setItem(O_KEY, JSON.stringify(orders));
-                renderHistory(); updateStats();
-            }
+        function showBillModal(id) {
+            const o = getOrders().find(x => x.orderId === id);
+            let h = `<p>බිල් අංකය: #${o.billNo}<br>දිනය: ${o.date} ${o.time}</p><table style="width:100%; border-collapse:collapse;">`;
+            o.items.forEach(i => { h += `<tr><td>${i.name} (${i.qty} ${i.unit})</td><td style="text-align:right;">${i.totalPrice.toFixed(2)}</td></tr>`; });
+            h += `</table><hr><h3>Total: රු. ${o.grandTotal.toFixed(2)}</h3>`;
+            document.getElementById('bill-content').innerHTML = h;
+            document.getElementById('print-modal').style.display = 'flex';
+            document.getElementById('realPrintBtn').onclick = () => printLogic(o);
         }
 
+        function printLogic(o) {
+            let itemsHtml = o.items.map(i => `<tr><td>${i.name} (${i.qty} ${i.unit})</td><td align="right">${i.totalPrice.toFixed(2)}</td></tr>`).join('');
+            let printWindow = window.open('', '_blank');
+            printWindow.document.write(`<html><head><title>Bill #${o.billNo}</title></head><body style="width:300px; font-family:sans-serif; text-align:center; padding:20px;">
+                <h2>A.M.S STORES</h2><hr><p align="left">බිල්: #${o.billNo}<br>දිනය: ${o.date} ${o.time}</p><hr><table width="100%">${itemsHtml}</table><hr>
+                <h3 align="right">Total: රු. ${o.grandTotal.toFixed(2)}</h3><p>ස්තූතියි!</p>
+                <script>window.onload=function(){window.print();window.close();}<\/script></body></html>`);
+            printWindow.document.close();
+        }
+
+        function deleteOrder(id) { if(prompt("Password?") === ADMIN_PW) { localStorage.setItem(O_KEY, JSON.stringify(getOrders().filter(o => o.orderId !== id))); renderHistory(); updateStats(); } }
+
         function updateStats() {
-            let orders = getOrders();
-            let totalSales = 0;
-            let totalProfit = 0;
-            orders.forEach(o => {
-                totalSales += o.grandTotal;
-                totalProfit += o.totalProfit;
-            });
-            document.getElementById('stat-total-sales').innerText = totalSales.toLocaleString();
-            document.getElementById('stat-total-profit').innerText = totalProfit.toLocaleString();
+            let o = getOrders(), s = 0, p = 0;
+            o.forEach(x => { s += x.grandTotal; p += x.totalProfit; });
+            document.getElementById('stat-total-sales').innerText = s.toLocaleString(undefined,{minimumFractionDigits:2});
+            document.getElementById('stat-total-profit').innerText = p.toLocaleString(undefined,{minimumFractionDigits:2});
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify({p:getProducts(),o:getOrders()})], {type:'application/json'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'AMS_Backup.json'; a.click();
+        }
+
+        function importData(e) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const d = JSON.parse(ev.target.result);
+                localStorage.setItem(P_KEY, JSON.stringify(d.p)); localStorage.setItem(O_KEY, JSON.stringify(d.o));
+                location.reload();
+            };
+            reader.readAsText(e.target.files[0]);
         }
 
         function downloadExcel() {
             let orders = getOrders();
-            let excelData = '\ufeff' + `<table border="1">
-                <tr style="background:#eee;"><td>Bill No</td><td>Item</td><td>Qty</td><td>Price</td><td>Profit</td><td>Total Bill</td><td>Date</td></tr>`;
+            let data = '\ufeff' + `<table border="1"><tr><td>Bill No</td><td>Date</td><td>Time</td><td>Item</td><td>Qty</td><td>Price</td><td>Total</td><td>Profit</td></tr>`;
             orders.forEach(o => {
                 o.items.forEach((it, idx) => {
-                    excelData += `<tr><td>${idx === 0 ? o.billNo : ""}</td><td>${it.name}</td><td>${it.qtyText}</td><td>${it.totalPrice}</td><td>${it.profit}</td><td>${idx === 0 ? o.grandTotal : ""}</td><td>${idx === 0 ? o.time : ""}</td></tr>`;
+                    data += `<tr><td>${idx==0?o.billNo:""}</td><td>${idx==0?o.date:""}</td><td>${idx==0?o.time:""}</td><td>${it.name}</td><td>${it.qty} ${it.unit}</td><td>${it.totalPrice.toFixed(2)}</td><td>${idx==0?o.grandTotal.toFixed(2):""}</td><td>${idx==0?o.totalProfit.toFixed(2):""}</td></tr>`;
                 });
             });
-            excelData += `</table>`;
-            const blob = new Blob([excelData], { type: 'application/vnd.ms-excel' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Sales_Report.xls';
-            link.click();
+            const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([data+'</table>'], {type:'application/vnd.ms-excel'}));
+            link.download = 'AMS_Report.xls'; link.click();
         }
 
-        window.onload = function() { renderProducts(); renderHistory(); updateStats(); };
+        window.onload = () => { renderProducts(); renderHistory(); updateStats(); };
     </script>
 </body>
 </html>
